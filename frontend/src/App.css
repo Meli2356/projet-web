@@ -1,0 +1,49 @@
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f1f5f9;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  max-width: 650px;
+  padding: 40px;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  color: #1e293b;
+  margin-bottom: 24px;
+}
+
+.success {
+  color: #15803d;
+  font-size: 18px;
+}
+
+.error {
+  color: #dc2626;
+  font-size: 18px;
+}
+
+.card span {
+  display: block;
+  margin-top: 12px;
+  color: #475569;
+}
