@@ -7,7 +7,7 @@ function App() {
   const [erreur, setErreur] = useState(false)
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/')
+ fetch("https://projet-web-backend-xp4w.onrender.com/api/")
       .then((response) => {
         if (!response.ok) {
           throw new Error('Tsy nahazo valiny avy amin’ny Django')
