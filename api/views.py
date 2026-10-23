@@ -1,14 +1,10 @@
-from django.shortcuts import render
 
-# Create your views here.
-
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework import viewsets
+from .models import Produit
+from .serializers import ProduitSerializer
 
 
-@api_view(["GET"])
-def accueil_api(request):
-    return Response({
-        "message": "Bienvenue dans mon application Django + React !",
-        "status": "success"
-    })
+class ProduitViewSet(viewsets.ModelViewSet):
+    queryset = Produit.objects.all().order_by("-id")
+    serializer_class = ProduitSerializer
+
