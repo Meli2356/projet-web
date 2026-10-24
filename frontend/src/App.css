@@ -1349,3 +1349,16 @@ h1 {
     transition-duration: 0.01ms !important;
   }
 }
+@media (max-width: 900px) {
+  body::before {
+    content: "MOBILE OK";
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    padding: 4px 8px;
+    color: #fff;
+    background: #d00;
+    font-size: 12px;
+  }
+}
