@@ -1,4 +1,3 @@
-css
 /* =========================================
    GESTCOM — STYLES PRINCIPAUX
    Compatible avec App.jsx
@@ -733,8 +732,6 @@ svg {
   background: #eef1f6;
 }
 
-/* Classes de compatibilité */
-
 .status-warning {
   color: #bd6b20;
   background: #fff0df;
@@ -1016,8 +1013,7 @@ svg {
 
 .transaction-line {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(90px, 1fr)
-    minmax(120px, 1fr) auto;
+  grid-template-columns: minmax(0, 2fr) minmax(90px, 1fr) minmax(120px, 1fr) auto;
   align-items: end;
   gap: 12px;
   min-width: 0;
