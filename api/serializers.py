@@ -1,13 +1,10 @@
 
 from rest_framework import serializers
+from django.db import transaction
+
 from .models import (
-    Produit,
-    Client,
-    Fournisseur,
-    Achat,
-    LigneAchat,
-    Vente,
-    LigneVente,
+    Produit, Client, Fournisseur,
+    Achat, LigneAchat, Vente, LigneVente,
 )
 
 
@@ -32,26 +29,50 @@ class FournisseurSerializer(serializers.ModelSerializer):
 class LigneAchatSerializer(serializers.ModelSerializer):
     class Meta:
         model = LigneAchat
-        fields = "__all__"
+        fields = ("id", "achat", "produit", "quantite", "prix_unitaire")
+        read_only_fields = ("id", "achat")
 
 
 class AchatSerializer(serializers.ModelSerializer):
-    lignes = LigneAchatSerializer(many=True, read_only=True)
+    lignes = LigneAchatSerializer(many=True, required=False)
 
     class Meta:
         model = Achat
         fields = "__all__"
+        read_only_fields = ("montant_total", "date_achat", "statut")
+
+    @transaction.atomic
+    def create(self, validated_data):
+        lignes_data = validated_data.pop("lignes", [])
+        achat = Achat.objects.create(**validated_data)
+
+        for ligne in lignes_data:
+            LigneAchat.objects.create(achat=achat, **ligne)
+
+        return achat
 
 
 class LigneVenteSerializer(serializers.ModelSerializer):
     class Meta:
         model = LigneVente
-        fields = "__all__"
+        fields = ("id", "vente", "produit", "quantite", "prix_unitaire")
+        read_only_fields = ("id", "vente")
 
 
 class VenteSerializer(serializers.ModelSerializer):
-    lignes = LigneVenteSerializer(many=True, read_only=True)
+    lignes = LigneVenteSerializer(many=True, required=False)
 
     class Meta:
         model = Vente
         fields = "__all__"
+        read_only_fields = ("montant_total", "date_vente", "statut")
+
+    @transaction.atomic
+    def create(self, validated_data):
+        lignes_data = validated_data.pop("lignes", [])
+        vente = Vente.objects.create(**validated_data)
+
+        for ligne in lignes_data:
+            LigneVente.objects.create(vente=vente, **ligne)
+
+        return vente
