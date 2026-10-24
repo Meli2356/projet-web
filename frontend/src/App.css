@@ -1336,7 +1336,7 @@ tbody tr:hover {
 }
 
 /* =========================================
-   TÉLÉPHONES
+   TÉLÉPHONES (CORRIGÉ & FORCÉ)
    ========================================= */
 
 @media screen and (max-width: 760px) {
@@ -1349,38 +1349,40 @@ tbody tr:hover {
   }
 
   .layout {
-    display: block;
-    width: 100%;
+    display: block !important;
+    width: 100% !important;
     min-width: 0;
     min-height: 100vh;
+    position: relative;
     overflow-x: clip;
   }
 
-  /* La sidebar devient un menu coulissant */
-
+  /* Ny sidebar dia miafina tanteraka any ankavia amin'ny finday */
   .sidebar {
-    position: fixed;
-    z-index: 1001;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    width: min(280px, 85vw);
-    max-width: 85vw;
-    height: 100vh;
-    height: 100dvh;
-    min-height: 0;
-    padding: 22px 14px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    transform: translateX(-105%);
-    transition: transform 0.25s ease;
-    box-shadow: 10px 0 30px #11182720;
+    position: fixed !important;
+    z-index: 1001 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: min(280px, 85vw) !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    padding: 22px 14px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    transform: translateX(-105%) !important;
+    transition: transform 0.25s ease !important;
+    box-shadow: 10px 0 30px #11182720 !important;
   }
 
+  /* Raha misy ilay classe sidebar-open dia mivoaka izy */
   .sidebar.sidebar-open {
-    transform: translateX(0);
+    transform: translateX(0) !important;
   }
 
   .brand {
@@ -1392,26 +1394,24 @@ tbody tr:hover {
   }
 
   /* Fond sombre derrière la sidebar ouverte */
-
   .mobile-backdrop {
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    border: 0;
-    background: rgba(15, 23, 42, 0.55);
+    position: fixed !important;
+    z-index: 1000 !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: rgba(15, 23, 42, 0.55) !important;
   }
 
-  /* Le contenu occupe toute la largeur */
-
+  /* Ny main-area dia mandray ny haben'ny écran manontolo */
   .main-area {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    margin: 0;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
     overflow-x: clip;
   }
 
@@ -1431,7 +1431,7 @@ tbody tr:hover {
   }
 
   .mobile-menu-button {
-    display: inline-flex;
+    display: inline-flex !important;
   }
 
   .breadcrumb {
