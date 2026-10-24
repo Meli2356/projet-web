@@ -15,15 +15,20 @@
 }
 
 html {
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100%;
 }
 
 body {
   margin: 0;
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100vh;
   background: #f4f6fb;
+  overflow-x: hidden;
 }
 
 button,
@@ -44,6 +49,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
+img,
 input,
 textarea,
 select {
@@ -52,13 +58,17 @@ select {
 
 #root {
   width: 100%;
+  max-width: 100%;
   min-height: 100vh;
 }
 
 .layout {
   min-height: 100vh;
   width: 100%;
+  min-width: 0;
 }
+
+/* ===================== SIDEBAR ===================== */
 
 .sidebar {
   position: fixed;
@@ -209,6 +219,8 @@ select {
   font-size: 11px;
 }
 
+/* ===================== ZONE PRINCIPALE ===================== */
+
 .main-area {
   min-width: 0;
   min-height: 100vh;
@@ -296,9 +308,14 @@ select {
   background: #fff;
 }
 
+.mobile-backdrop {
+  display: none;
+}
+
 .content {
   width: 100%;
   max-width: 1600px;
+  min-width: 0;
   margin: 0 auto;
   padding: 32px 34px 20px;
 }
@@ -346,6 +363,8 @@ h1 {
   gap: 10px;
 }
 
+/* ===================== BOUTONS ===================== */
+
 .button-primary,
 .button-secondary {
   display: inline-flex;
@@ -384,6 +403,8 @@ h1 {
 .logout-button {
   margin-left: 6px;
 }
+
+/* ===================== STATISTIQUES ===================== */
 
 .stats-grid {
   display: grid;
@@ -464,6 +485,8 @@ h1 {
   font-size: 11px;
   line-height: 1.5;
 }
+
+/* ===================== PANNEAUX ===================== */
 
 .dashboard-grid {
   display: grid;
@@ -665,7 +688,7 @@ h1 {
   font-size: 17px;
 }
 
-/* Formulaires */
+/* ===================== FORMULAIRES ===================== */
 
 .data-panel {
   width: 100%;
@@ -753,7 +776,7 @@ h1 {
   margin-top: 22px;
 }
 
-/* Recherche et tableaux */
+/* ===================== RECHERCHE ET TABLEAUX ===================== */
 
 .product-tools {
   display: flex;
@@ -779,7 +802,9 @@ h1 {
 .table-container {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 0 20px 12px;
 }
 
@@ -868,7 +893,7 @@ h1 {
   font-size: 11px;
 }
 
-/* Achats et ventes */
+/* ===================== ACHATS ET VENTES ===================== */
 
 .transaction-lines {
   margin-top: 22px;
@@ -938,7 +963,7 @@ h1 {
   line-height: 1.6;
 }
 
-/* Messages */
+/* ===================== MESSAGES ===================== */
 
 .error-message,
 .success-message {
@@ -977,7 +1002,7 @@ h1 {
   line-height: 1;
 }
 
-/* Connexion */
+/* ===================== CONNEXION ===================== */
 
 .login-page {
   display: grid;
@@ -1041,10 +1066,6 @@ h1 {
   text-align: center;
 }
 
-.mobile-backdrop {
-  display: none;
-}
-
 .footer {
   display: flex;
   flex-wrap: wrap;
@@ -1055,7 +1076,15 @@ h1 {
   font-size: 11px;
 }
 
-/* Tablette */
+/* =====================================================
+   RESPONSIVE
+   Ordinateur : par defaut (au-dessus de 1100px)
+   Tablette   : jusqu'a 1100px
+   Telephone  : jusqu'a 900px
+   Petit tel. : jusqu'a 480px
+   ===================================================== */
+
+/* ---------- Tablette ---------- */
 
 @media (max-width: 1100px) {
   .content {
@@ -1079,12 +1108,16 @@ h1 {
   }
 }
 
-/* Téléphone */
+/* ---------- Telephone ---------- */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+  /* Menu lateral cache, ouvert avec le bouton */
   .sidebar {
-    width: 258px;
-    transform: translateX(-105%);
+    width: min(280px, 85vw);
+    max-width: 85vw;
+    height: 100dvh;
+    z-index: 1000;
+    transform: translateX(-100%);
     transition: transform 0.25s ease;
   }
 
@@ -1095,7 +1128,7 @@ h1 {
   .mobile-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 25;
+    z-index: 999;
     display: block;
     width: 100%;
     height: 100%;
@@ -1105,13 +1138,8 @@ h1 {
 
   .main-area {
     width: 100%;
+    max-width: 100%;
     margin-left: 0;
-  }
-
-  .topbar {
-    min-height: 64px;
-    gap: 10px;
-    padding: 12px 14px;
   }
 
   .mobile-menu-button {
@@ -1120,15 +1148,29 @@ h1 {
     justify-content: center;
   }
 
+  /* Barre du haut */
+  .topbar {
+    min-height: 60px;
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .topbar-left {
+    flex: 1 1 auto;
+    gap: 8px;
+  }
+
   .breadcrumb {
-    overflow: hidden;
+    min-width: 0;
     max-width: 45vw;
+    overflow: hidden;
     font-size: 11px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .user-area {
+    flex-shrink: 0;
     gap: 7px;
   }
 
@@ -1149,32 +1191,45 @@ h1 {
     font-size: 10px;
   }
 
+  /* Contenu */
   .content {
-    padding: 22px 14px;
+    padding: 16px 12px;
   }
 
   .page-heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .page-heading h1 {
+    font-size: 24px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
   }
 
   .page-actions {
     justify-content: flex-start;
     width: 100%;
+    gap: 8px;
   }
 
-  .stats-grid {
+  .page-actions > button {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+
+  /* Grilles en une colonne */
+  .stats-grid,
+  .dashboard-grid,
+  .form-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
   }
 
   .stat-card {
     padding: 17px;
-  }
-
-  .dashboard-grid {
-    gap: 14px;
   }
 
   .panel-heading {
@@ -1186,13 +1241,14 @@ h1 {
     padding: 0 16px 12px;
   }
 
-  .entity-form {
-    padding: 18px 14px;
+  .recent-item,
+  .alert-item {
+    flex-wrap: wrap;
   }
 
-  .form-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 15px;
+  /* Formulaires */
+  .entity-form {
+    padding: 18px 14px;
   }
 
   .form-description {
@@ -1207,8 +1263,13 @@ h1 {
     max-width: none;
   }
 
+  /* Tableaux : defilement horizontal */
   .table-container {
-    padding: 0 10px 10px;
+    padding: 0 8px 10px;
+  }
+
+  .table-container table {
+    min-width: 600px;
   }
 
   .table-container th,
@@ -1216,9 +1277,10 @@ h1 {
     padding: 11px 10px;
   }
 
+  /* Achats / ventes */
   .transaction-line {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 10px;
   }
 
   .remove-line {
@@ -1239,6 +1301,43 @@ h1 {
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+
+  /* Connexion */
+  .login-page {
+    padding: 16px;
+  }
+
+  .login-card {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 24px 18px;
+  }
+}
+
+/* ---------- Petit telephone ---------- */
+
+@media (max-width: 480px) {
+  .breadcrumb {
+    max-width: 38vw;
+  }
+
+  .page-heading h1 {
+    font-size: 22px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions > button {
+    width: 100%;
+  }
+
+  .transaction-total {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 }
 
