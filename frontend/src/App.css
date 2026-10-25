@@ -1968,3 +1968,23 @@ tbody tr:hover {
     min-width: 600px !important;
   }
 }
+
+/* =========================================
+   GRAPHIQUES
+   ========================================= */
+
+.chart-panel {
+  min-width: 0;
+}
+
+.chart-container {
+  width: 100%;
+  min-width: 0;
+  height: 300px;
+}
+
+@media screen and (max-width: 760px) {
+  .chart-container {
+    height: 260px;
+  }
+}

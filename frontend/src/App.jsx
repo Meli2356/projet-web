@@ -1,5 +1,14 @@
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from 'recharts'
 import './App.css'
 
 const API_BASE = 'https://projet-web-backend-xp4w.onrender.com/api'
@@ -750,6 +759,37 @@ function App() {
     ventes: { title: 'Ventes', subtitle: 'Créez des ventes et validez les sorties de stock.' },
   }[active]
 
+  // Données du graphique : ventes et achats par date (7 dernières dates)
+  const donneesTransactions = useMemo(() => {
+    const parDate = {}
+    const ajouter = (liste, champDate, cle) => {
+      liste.forEach((item) => {
+        const date = String(item[champDate] || '').slice(0, 10)
+        if (!date) return
+        if (!parDate[date]) parDate[date] = { date, ventes: 0, achats: 0 }
+        parDate[date][cle] += Number(item.montant_total || 0)
+      })
+    }
+    ajouter(ventes, 'date_vente', 'ventes')
+    ajouter(achats, 'date_achat', 'achats')
+    return Object.values(parDate)
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .slice(-7)
+  }, [ventes, achats])
+
+  // Données du graphique : quantités en stock (8 premiers produits)
+  const donneesStock = useMemo(
+    () =>
+      [...produits]
+        .sort((a, b) => Number(b.quantite || 0) - Number(a.quantite || 0))
+        .slice(0, 8)
+        .map((p) => ({
+          nom: p.nom || p.reference || 'Produit',
+          quantite: Number(p.quantite || 0),
+        })),
+    [produits],
+  )
+
   const lowStock = produits.filter(
     (p) => Number(p.quantite) <= Number(p.seuil_alerte),
   )
@@ -978,6 +1018,75 @@ function App() {
                   </strong>
                   <span className="stat-description">Achats et ventes à valider</span>
                 </div>
+              </div>
+
+              <div className="dashboard-grid">
+                <section className="panel chart-panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Ventes et achats</h2>
+                      <p>Montants par date (Ar)</p>
+                    </div>
+                  </div>
+                  {donneesTransactions.length ? (
+                    <div className="chart-container">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={donneesTransactions}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="date"
+                            interval={0}
+                            tick={{ fontSize: 11 }}
+                            tickFormatter={(d) => String(d).slice(5)}
+                          />
+                          <YAxis tick={{ fontSize: 11 }} width={48} />
+                          <Tooltip
+                            formatter={(value) =>
+                              `${Number(value).toLocaleString('fr-FR')} Ar`
+                            }
+                          />
+                          <Legend />
+                          <Bar dataKey="ventes" name="Ventes" fill="#6259d9" />
+                          <Bar dataKey="achats" name="Achats" fill="#f59e0b" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <EmptyState>Aucune vente ou aucun achat à afficher.</EmptyState>
+                  )}
+                </section>
+
+                <section className="panel chart-panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Quantités en stock</h2>
+                      <p>Quantité disponible par produit</p>
+                    </div>
+                  </div>
+                  {donneesStock.length ? (
+                    <div className="chart-container">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={donneesStock}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis
+                            dataKey="nom"
+                            interval={0}
+                            angle={-25}
+                            textAnchor="end"
+                            height={70}
+                            tick={{ fontSize: 11 }}
+                          />
+                          <YAxis allowDecimals={false} tick={{ fontSize: 11 }} width={40} />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="quantite" name="Quantité en stock" fill="#16a34a" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
+                    <EmptyState>Aucun produit à afficher.</EmptyState>
+                  )}
+                </section>
               </div>
 
               <div className="dashboard-grid">
