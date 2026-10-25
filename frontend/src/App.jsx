@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import './App.css'
 
@@ -1044,8 +1045,325 @@ function App() {
                   )}
                 </section>
               </div>
+
+              <div className="dashboard-grid">
+                <section className="panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Derniers achats</h2>
+                      <p>Historique des entrées</p>
+                    </div>
+                    <button className="text-button" onClick={() => setActive('achats')}>
+                      Voir tout →
+                    </button>
+                  </div>
+                  <div className="table-container">
+                    <table>
+                      <thead><tr><th>N°</th><th>Fournisseur</th><th>Montant</th><th>Statut</th></tr></thead>
+                      <tbody>
+                        {achats.slice(0, 5).map((a) => (
+                          <tr key={a.id}>
+                            <td>#{a.id}</td>
+                            <td>{typeof a.fournisseur === 'object' ? a.fournisseur?.nom : fournisseurs.find((f) => f.id === a.fournisseur)?.nom || '—'}</td>
+                            <td>{money(a.montant_total)}</td>
+                            <td><StatusBadge value={a.statut} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {!achats.length && <EmptyState>Aucun achat enregistré.</EmptyState>}
+                </section>
+
+                <section className="panel">
+                  <div className="panel-heading">
+                    <div>
+                      <h2>Dernières ventes</h2>
+                      <p>Historique des sorties</p>
+                    </div>
+                    <button className="text-button" onClick={() => setActive('ventes')}>
+                      Voir tout →
+                    </button>
+                  </div>
+                  <div className="table-container">
+                    <table>
+                      <thead><tr><th>N°</th><th>Client</th><th>Montant</th><th>Statut</th></tr></thead>
+                      <tbody>
+                        {ventes.slice(0, 5).map((v) => (
+                          <tr key={v.id}>
+                            <td>#{v.id}</td>
+                            <td>{typeof v.client === 'object' ? v.client?.nom : clients.find((c) => c.id === v.client)?.nom || 'Client comptant'}</td>
+                            <td>{money(v.montant_total)}</td>
+                            <td><StatusBadge value={v.statut} /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {!ventes.length && <EmptyState>Aucune vente enregistrée.</EmptyState>}
+                </section>
+              </div>
             </>
-          ) : null}
+          ) : (
+            <>
+              <div className="page-heading">
+                <div>
+                  <p className="eyebrow">GESTION COMMERCIALE</p>
+                  <h1>{page?.title}</h1>
+                  <p className="subtitle">{page?.subtitle}</p>
+                </div>
+                <div className="page-actions">
+                  <button
+                    className="button-secondary"
+                    onClick={() => loadData(active)}
+                    disabled={loading}
+                  >
+                    ↻ Actualiser
+                  </button>
+                  <button className="button-primary" onClick={openCreate}>
+                    + Ajouter
+                  </button>
+                </div>
+              </div>
+
+              {showForm && (
+                <section className="panel data-panel form-panel">
+                  {active === 'produits' && (
+                    <ProductForm
+                      key={editing?.id || 'new-product'}
+                      initial={editing}
+                      busy={busy}
+                      onCancel={closeForm}
+                      onSave={(payload) =>
+                        saveEntity('produits/', payload, editing?.id)
+                      }
+                    />
+                  )}
+
+                  {active === 'clients' && (
+                    <PersonForm
+                      key={editing?.id || 'new-client'}
+                      initial={editing}
+                      title={editing ? 'Modifier le client' : 'Nouveau client'}
+                      busy={busy}
+                      onCancel={closeForm}
+                      onSave={(payload) =>
+                        saveEntity('clients/', payload, editing?.id)
+                      }
+                    />
+                  )}
+
+                  {active === 'fournisseurs' && (
+                    <PersonForm
+                      key={editing?.id || 'new-supplier'}
+                      initial={editing}
+                      title={editing ? 'Modifier le fournisseur' : 'Nouveau fournisseur'}
+                      busy={busy}
+                      onCancel={closeForm}
+                      onSave={(payload) =>
+                        saveEntity('fournisseurs/', payload, editing?.id)
+                      }
+                    />
+                  )}
+
+                  {(active === 'achats' || active === 'ventes') && (
+                    <TransactionForm
+                      key={`${active}-new`}
+                      type={active}
+                      products={produits}
+                      people={active === 'achats' ? fournisseurs : clients}
+                      busy={busy}
+                      onCancel={closeForm}
+                      onSave={(payload) => saveEntity(`${active}/`, payload)}
+                    />
+                  )}
+                </section>
+              )}
+
+              {active !== 'achats' && active !== 'ventes' && (
+                <section className="panel data-panel">
+                  <div className="product-tools">
+                    <input
+                      className="search-input"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={
+                        active === 'produits'
+                          ? 'Rechercher par référence, nom ou catégorie…'
+                          : 'Rechercher par nom, téléphone ou email…'
+                      }
+                    />
+                  </div>
+
+                  {loading ? (
+                    <EmptyState>Chargement des données…</EmptyState>
+                  ) : active === 'produits' ? (
+                    <div className="table-container">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Référence</th><th>Produit</th><th>Catégorie</th>
+                            <th>Stock</th><th>Prix d’achat</th><th>Prix de vente</th>
+                            <th>État</th><th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredProducts.map((p) => (
+                            <tr key={p.id}>
+                              <td><strong>{p.reference}</strong></td>
+                              <td>{p.nom}</td>
+                              <td>{p.categorie || '—'}</td>
+                              <td>{p.quantite}</td>
+                              <td>{money(p.prix_achat)}</td>
+                              <td>{money(p.prix_vente)}</td>
+                              <td>
+                                {Number(p.quantite) <= Number(p.seuil_alerte)
+                                  ? <span className="status status-annule">Stock bas</span>
+                                  : <span className="status status-valide">Disponible</span>}
+                              </td>
+                              <td>
+                                <div className="row-actions">
+                                  <button className="action-edit" onClick={() => openEdit(p)}>Modifier</button>
+                                  <button className="action-delete" disabled={busy} onClick={() => deleteEntity('produits/', p, `le produit ${p.nom}`)}>Supprimer</button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {!filteredProducts.length && <EmptyState>Aucun produit trouvé.</EmptyState>}
+                    </div>
+                  ) : (
+                    <div className="table-container">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Nom</th><th>Téléphone</th><th>Email</th>
+                            <th>Adresse</th><th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredPeople.map((p) => (
+                            <tr key={p.id}>
+                              <td><strong>{p.nom}</strong></td>
+                              <td>{p.telephone || '—'}</td>
+                              <td>{p.email || '—'}</td>
+                              <td className="address-cell">{p.adresse || '—'}</td>
+                              <td>
+                                <div className="row-actions">
+                                  <button className="action-edit" onClick={() => openEdit(p)}>Modifier</button>
+                                  <button
+                                    className="action-delete"
+                                    disabled={busy}
+                                    onClick={() =>
+                                      deleteEntity(
+                                        active === 'clients' ? 'clients/' : 'fournisseurs/',
+                                        p,
+                                        `${active === 'clients' ? 'le client' : 'le fournisseur'} ${p.nom}`,
+                                      )
+                                    }
+                                  >
+                                    Supprimer
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {!filteredPeople.length && <EmptyState>Aucun résultat trouvé.</EmptyState>}
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {(active === 'achats' || active === 'ventes') && (
+                <section className="panel data-panel">
+                  <div className="product-tools">
+                    <input
+                      className="search-input"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Rechercher par numéro, partenaire ou statut…"
+                    />
+                  </div>
+
+                  {loading ? (
+                    <EmptyState>Chargement des données…</EmptyState>
+                  ) : (
+                    <div className="table-container">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>N°</th>
+                            <th>{active === 'achats' ? 'Fournisseur' : 'Client'}</th>
+                            <th>Date</th><th>Lignes</th><th>Montant</th>
+                            <th>Statut</th><th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredTx.map((item) => {
+                            const person = active === 'achats' ? item.fournisseur : item.client
+                            const partner =
+                              typeof person === 'object'
+                                ? person?.nom
+                                : (active === 'achats' ? fournisseurs : clients).find((p) => p.id === person)?.nom ||
+                                  (active === 'ventes' ? 'Client comptant' : '—')
+
+                            return (
+                              <tr key={item.id}>
+                                <td><strong>#{item.id}</strong></td>
+                                <td>{partner || '—'}</td>
+                                <td>{dateText(active === 'achats' ? item.date_achat : item.date_vente)}</td>
+                                <td>{item.lignes?.length || 0}</td>
+                                <td>{money(item.montant_total)}</td>
+                                <td><StatusBadge value={item.statut} /></td>
+                                <td>
+                                  <div className="row-actions">
+                                    {item.statut === 'brouillon' && (
+                                      <button
+                                        className="action-edit"
+                                        disabled={busy}
+                                        onClick={() => validateTransaction(active, item)}
+                                      >
+                                        Valider
+                                      </button>
+                                    )}
+                                    {item.statut === 'brouillon' && (
+                                      <button
+                                        className="action-delete"
+                                        disabled={busy}
+                                        onClick={() =>
+                                          deleteEntity(
+                                            `${active}/`,
+                                            item,
+                                            `${active === 'achats' ? 'l’achat' : 'la vente'} #${item.id}`,
+                                          )
+                                        }
+                                      >
+                                        Supprimer
+                                      </button>
+                                    )}
+                                    {item.statut !== 'brouillon' && <span className="muted">Aucune action</span>}
+                                  </div>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                      {!filteredTx.length && <EmptyState>Aucune opération trouvée.</EmptyState>}
+                    </div>
+                  )}
+                </section>
+              )}
+            </>
+          )}
+
+          <footer className="footer">
+            <span>© {new Date().getFullYear()} GestCom</span>
+            <span>Gestion commerciale · Tous droits réservés</span>
+          </footer>
         </div>
       </main>
     </div>
